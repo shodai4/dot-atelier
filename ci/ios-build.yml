@@ -1,0 +1,61 @@
+name: iOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 依存を入れる
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install tree-sitter tree-sitter-swift pillow
+      - name: 計算の自己点検
+        run: python3 scripts/verify_logic.py
+      - name: Swift の構文点検
+        run: python3 scripts/check_syntax.py
+
+  build:
+    name: build
+    needs: test
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: プロジェクトを生成
+        run: |
+          brew install xcodegen
+          xcodegen generate
+          xcodebuild -list -project DotAtelier.xcodeproj
+      - name: 署名なしでビルド
+        run: |
+          xcodebuild build \
+            -project DotAtelier.xcodeproj \
+            -scheme DotAtelier \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+
+  testflight:
+    name: testflight
+    needs: build
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: bash scripts/ci-testflight.sh

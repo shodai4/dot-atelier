@@ -1,0 +1,9 @@
+.DS_Store
+build/
+DerivedData/
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+__pycache__/
+*.pyc
+icon_preview.png
