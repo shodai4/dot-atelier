@@ -35,7 +35,6 @@ final class StudioModel: ObservableObject {
     @Published var isWorking: Bool = false
     @Published var workNote: String = ""
 
-    private let cutoutService = SubjectCutoutService()
     private var reprocessTask: Task<Void, Never>?
     private var toastTask: Task<Void, Never>?
 
@@ -109,7 +108,11 @@ final class StudioModel: ObservableObject {
             var base = image
             if options.cutoutWithVision && SubjectCutoutService.isAvailable {
                 workNote = "被写体を切り抜き中（\(index + 1)/\(images.count)）"
-                if let cut = await cutoutService.extractForeground(from: image) {
+                await Task.yield()
+                let cut = await Task.detached(priority: .userInitiated) {
+                    await SubjectCutoutService().extractForeground(from: image)
+                }.value
+                if let cut {
                     base = cut
                 }
             }
@@ -120,6 +123,7 @@ final class StudioModel: ObservableObject {
             }
 
             workNote = "ドット絵に変換中（\(index + 1)/\(images.count)）"
+            await Task.yield()
             let result = await Task.detached(priority: .userInitiated) {
                 PixelArtEngine.convert(baseImage: base, options: frameOptions)
             }.value
