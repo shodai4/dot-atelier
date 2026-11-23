@@ -60,6 +60,11 @@ python3 scripts/verify_logic.py
 python3 scripts/check_syntax.py
 ```
 
+## 配信
+
+- App Store Connect App ID: `6838250888`（Bundle ID `com.shodai4.dotatelier`、Resource ID `4KRQ3QKZKX`）
+- 内部テスト「開発テスト」へ、TestFlightビルド到着後に自動招待。
+
 ## CI
 
 `ci/ios-build.yml` が test（ubuntu・計算と構文）→ build（macOS・署名なしコンパイル）→ testflight（クラウド署名でアップロード）の3ジョブを回す。必要なSecretsは `APP_STORE_CONNECT_KEY_ID` / `APP_STORE_CONNECT_ISSUER_ID` / `APP_STORE_CONNECT_PRIVATE_KEY` / `APPLE_TEAM_ID`。

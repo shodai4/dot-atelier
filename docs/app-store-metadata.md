@@ -4,7 +4,8 @@
 
 - アプリ名: ドットアトリエ
 - サブタイトル（30文字以内）: 絵をドット絵に。端末内で完結
-- Bundle ID: `com.shodai4.dotatelier`
+- Bundle ID: `com.shodai4.dotatelier`（Resource ID: `4KRQ3QKZKX`）
+- App Store Connect App ID: `6838250888`
 - SKU: `dot-atelier-ios`
 - プライマリ言語: 日本語
 - 価格: 無料
@@ -12,6 +13,7 @@
 - 年齢制限: 4+
 - 対応OS: iOS 17.0以降
 - デバイス: iPhone
+- 内部テスト: 「開発テスト」（`d594b27c-0fc7-4b60-8ca3-0d3f6a8201d0`、ビルド到着後に自動招待）
 
 ## 概要（4000文字以内）
 
